@@ -1,29 +1,12 @@
-# nlp-health
-
 ## Configuración del entorno
-```bash
+Para construir el enviroment de conda hay que ejecutar el siguiente código.
+```
 conda env create -f env.yml
 conda activate nlp-health
 pip install -r requirements.txt
 ```
-## Estructuración de diagnóstigos patológicos en formularios
-### Datos
-#### Raw
-- Archivos que tienen formato `.xls`. Estos archivos contienen todos los datos relacionados con las biopsias para cada año. 
-
-- `plantilla_formulario.odt`, muestra la estructura que deben tener los formularios que se están estructurando.
-
-#### Clean
-- `Biopsias_HUPM_all.csv` contiene todos los datos de las biopsias, independientemente del año, que contienen un formulario que comienza por `Tipo de intervención`. Además, como en los datos en crudo el formulario puede aparecer en varias columnas, en este caso es unificado en una sola. Finalmente se unifican las diferentes entradas que puede tener cada estudio, para eliminar duplicados y poder identificar los elementos por este código.
-
-- `parsed_form_raw.json` contiene los formularios de cada estudio parseados en formato `json`. Contiene los campos que se muestran en el documento `plantilla_formulario.odt`.
-
-- `internvetion_value_counts.csv` contiene una lista de las posibles intervenciones que se pueden extraer de los formularios. Además incluye el número de ocurrencias y una estimación automática de las clases, con las que se correspondería cada texto de intervención. Estos datos son los que se le pasaron a Lidia para que ella los anotara. La anotación se puede observar en el siguiente [Google Spreadsheet](https://drive.google.com/file/d/1mAoGChwEOAvush7vz5pxhvBn3oRJ4QFO/view?usp=sharing).
-
-## Notebooks
-- `eda_intervention_labels.ipynb` aprovecha el procesamiento realizado al parsear el formulario y estudia el número de intervenciones que pertenecen a cada clase. Además, se obtiene el número de labels utilizado para clasificar cada elemento. Esto último, determina que el problema relacionado con el tipo de intervención es una clasificación multilabel.
-
-- `fuzz_ratios_comparison.ipynb` compara las deferentes métricas que se peuden utilizar con la librería `fuzzywuzzy`, determinando que con la que mejores resultados se obtiene, para determinar las clases de una intervención, es `simple_ratio`. En [#22](https://github.com/Komorebi-AI/nlp-health/issues/22) se amplia la explicación de los resultados obtenidos en este estudio, además de las diferencias entre las métricas.
+Para actualizar requirements.txt: `pip-compile --extra=dev`
+# Estructuración de diagnóstigos patológicos en formularios
 
 ## Librería
 ### form
@@ -90,26 +73,13 @@ pip install -r requirements.txt
     - Input: dataset para entrenar el modelo.
     - Output: modelo entrenado y resultados que este produce.
 
-## Clasificación de diagnósticos patológicos en formularios con códigos SNOMED
-### Datos
-El dataset ```Biopsias_HUPM_2010-2018_mor_codes-v1.csv``` contiene datos de pacientes, incluyendo un diagnóstico y los códigos SNOMED-CT con los que este se relaciona.
-
-En este caso solo se han utilizado los códigos topográficos y morfológicos. Por eso existen otros dos archivos (```id_desc_morf.json``` y ```id_desc_top.json```), que indican una pequeña descripción sobre cada uno de los códigos, además de la lista ordenada de todos ellos.
-
-### Notebooks
-Notebooks como: ```daniprec_eda_class.ipynb```, ```eda_1.ipynb```, ```Javier_EDA.ipynb``` o ```TextMining-EDA.ipynb```, desarrollan un estudio detallado de los datos y las clases implicadas en el problema.
-
-```Javier_SNOMED_Trainer.ipynb``` ha sido utilizado para entrenar los modelos basados en transformers que resuelve esta tarea. Incluye una búsqueda de hiperparámetros con ```wandb```.
+# Clasificación de diagnósticos patológicos en formularios con códigos SNOMED
 
 ### Recursos
 En el caso de querer realizar un entrenamiento sencillo o inferencia, es recomendable hacer uso de la clase ```SNOMED_BERT_model.py```. Esta incluye todo lo necesario para funcionar correctamente, sin la necesidad de utilizar un cuaderno ```jupyter```.
 
-## Desarrollo
 
-Actualizar requirements.txt: `pip-compile --extra=dev`
-
-
-## Anotación
+# Anotación
 Será necesario clonar https://github.com/Komorebi-AI/prodigy_annotator, ya que contiene los archivos necesarios para lanzar una herramienta de anotación.
 
 Primero habrá que instalar prodigy desde https://github.com/Komorebi-AI/prodigy_annotator/nightly: `pip install prodigy-1.11.0a8-cp36.cp37.cp38.cp39-cp36m.cp37m.cp38.cp39-linux_x86_64.whl`
@@ -176,7 +146,7 @@ export PRODIGY_HOME="./config_files/tumor_size"
 prodigy db-out ner_measures> ./annotations.jsonl
 ```
 
-## Streamlit app
+# Streamlit app
 Se ha creado una demo para ver el funcionamiento de los modelos. Primero hay que tener los modelos entrenados, si no es el caso se ha creado un script que se encarga de esto:
 ```
 python biopsias/generate_models.py
